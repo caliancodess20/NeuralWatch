@@ -26,10 +26,9 @@ import numpy as np
 try:
     import cv2
     import mediapipe as mp
-    CAMERA_AVAILABLE = True
+    CAMERA_AVAILABLE = hasattr(mp, "solutions")
 except ImportError:
     CAMERA_AVAILABLE = False
-
 
 def count_raised_fingers(hand_landmarks):
     """
