@@ -157,7 +157,7 @@ A healthy AI learning normally produces random, non-directional weight changes â
 ## Installation
 
 ```bash
-git clone https://github.com/chanekar25bai10603-sketch/NeuralWatch
+git clone https://github.com/caliancodess20/NeuralWatch
 cd neuralwatch
 pip install -r requirements.txt
 streamlit run dashboard.py
