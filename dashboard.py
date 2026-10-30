@@ -15,6 +15,8 @@ Layers:
 import time
 import pandas as pd
 import streamlit as st
+import plotly.graph_objects as go
+
 
 from neural_brain import NeuromorphicBrain
 from neuralwatch import NeuralWatch, DRIFT_THRESHOLD, SPIKE_THRESHOLD
@@ -137,6 +139,9 @@ if "session_started" not in st.session_state:
 if "fingerprint" not in st.session_state:
     st.session_state.fingerprint = None
 
+if "snapshots" not in st.session_state:
+    st.session_state.snapshots = []
+
 # ---------------------------------------------------------------------------
 # Layer 1 - Gesture lock gate
 # ---------------------------------------------------------------------------
@@ -233,6 +238,7 @@ with st.sidebar:
         watch.perform_rollback()
         st.session_state.fingerprint = None
         st.session_state.history = []
+        st.session_state.snapshots = []
         st.success("Brain rolled back to clean state!")
 
     st.markdown("---")
@@ -386,6 +392,36 @@ with chart_r:
 
 st.markdown("<hr style='border-color:#1E293B;'>", unsafe_allow_html=True)
 
+# --- Attack replay ------------------------------------------------------------
+st.markdown("### ⏪ Attack Replay")
+snaps = st.session_state.snapshots
+
+if len(snaps) < 2:
+    st.caption("Run monitoring for a few seconds to record history.")
+elif st.session_state.monitoring:
+    st.info("Click ⏸ Pause, then drag the slider to replay the past.")
+else:
+    ticks = [s["tick"] for s in snaps]
+    chosen = st.slider(
+        "Go back to tick",
+        min_value=ticks[0],
+        max_value=ticks[-1],
+        value=ticks[-1],
+    )
+    snap = next(s for s in snaps if s["tick"] == chosen)
+    delta = snap["weights"] - brain.baseline
+
+    r1, r2 = st.columns(2)
+    r1.metric("Drift at that second", f"{float(abs(delta).mean()):.4f}")
+    r2.metric("Weights pushed UP", int((delta > 0.02).sum()))
+
+    fig = go.Figure(go.Heatmap(z=delta, colorscale="RdBu_r", zmid=0))
+    fig.update_layout(height=320, margin=dict(l=10, r=10, t=10, b=10))
+    st.plotly_chart(fig, use_container_width=True)
+    st.caption("Red = weight went up from clean. Blue = went down. White = unchanged.")
+
+st.markdown("<hr style='border-color:#1E293B;'>", unsafe_allow_html=True)
+
 # --- Audit log -----------------------------------------------------------------
 st.markdown("### Live Audit Log — Cryptographically Signed")
 
@@ -440,7 +476,12 @@ if st.session_state.monitoring:
         "status": result["status"],
         "time": result["log_entry"]["time"],
         "attack_mode": st.session_state.attack_mode,
-    })
+    })    
+    st.session_state.snapshots.append(
+        {"tick": tick, "weights": brain.weights.copy()}
+    )
+    if len(st.session_state.snapshots) > 600:
+        st.session_state.snapshots.pop(0)
 
     time.sleep(1)
     st.rerun()
