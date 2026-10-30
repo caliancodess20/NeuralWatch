@@ -1,196 +1,378 @@
 # 🧠 NeuralWatch
-### Neuromorphic AI Integrity Monitor for Cybersecurity 
+### Neuromorphic AI Integrity Monitoring & Cybersecurity Platform
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://neuralwatch-vv3lpllqcyifqmgcmpqw6a.streamlit.app/)
 
-> *"Every existing cybersecurity tool monitors network traffic — the road. NeuralWatch monitors the brain driving the car."*
+**NeuralWatch is a neuromorphic-inspired AI security monitoring prototype designed to explore model-weight drift detection, simulated poisoning attacks, attack replay, poison fingerprint tracking, and tamper-evident audit logging.**
 
-NeuralWatch is a neuromorphic cybersecurity prototype developed for Neuronex'26. Inspired by biological neurons, it uses a Leaky Integrate-and-Fire (LIF) model to monitor AI weight drift and identify suspicious patterns that may indicate model poisoning or manipulation
----
-As first-year AIML students, we wanted to explore how concepts from neuromorphic computing could be applied to cybersecurity. NeuralWatch is our attempt to combine AI integrity monitoring, spike-based neural models, and explainable threat detection into a single prototype.
+Instead of monitoring only network traffic and external system activity, NeuralWatch explores an additional security surface: the internal integrity of machine learning models.
 
-## The Problem Nobody Is Solving
-
-Modern AI-powered cybersecurity systems store their knowledge in **synaptic weights** — numbers that shift as the AI learns. A sophisticated attacker doesn't attack your network directly anymore.
-
-They **poison the AI itself.**
-
-By feeding it tiny amounts of corrupted data over weeks or months, they gradually shift these weights until the AI starts treating real attacks as normal traffic. By the time the breach surfaces, the guard has already been compromised — and every log looks clean.
-
-> The **SolarWinds attack (2020)** stayed undetected for **9 months** because every individual action looked normal to existing AI. Attackers moved slowly, patiently, below every threshold. Nobody was watching the AI's brain change.
-
-**NeuralWatch is built specifically for this attack.**
+Developed by **Team VECTRACE** for **NEURONEX'26 — Neuromorphic Computing Track** at VIT Bhopal University.
 
 ---
 
-## Our Solution
+## 🚀 Project Overview
 
-NeuralWatch is a three-layer neuromorphic security system that treats the AI's own neural weights as a security surface — not an afterthought.
+Machine learning models can be manipulated through poisoned training data, malicious parameter modifications, and unauthorized changes to model behaviour.
 
-![neuralwatch_architecture_flowchart](neuralwatch_architecture_flowchart.svg)
-```
+Such attacks can be difficult to identify when individual parameter changes appear insignificant.
+
+NeuralWatch explores a temporal approach to identifying suspicious changes by monitoring model-weight drift and applying **Leaky Integrate-and-Fire (LIF) neuron dynamics**.
+
+The platform combines:
+
+- Neuromorphic-inspired drift detection.
+- Simulated poisoning and attack scenarios.
+- Poison fingerprint tracking.
+- Attack Replay for repeatable demonstrations.
+- Monitoring metrics and visualization.
+- Gesture-based dashboard authentication.
+- SHA-256 chained audit logging.
+- Trusted checkpoint restoration and rollback.
+
 ---
 
-## *Layer 1 — Biometric Gesture Lock*
+## 🏗️ System Architecture
 
-Only an authorized engineer, performing a specific hand gesture via webcam, can access the monitoring dashboard.
+NeuralWatch follows a modular architecture that separates monitoring, authentication, attack simulation, and integrity verification.
 
-- Powered by **MediaPipe hand landmark detection**
-- 21-point hand landmark model runs entirely on-device — no data leaves the machine
-- Requires sustained gesture hold (2 seconds) to prevent accidental triggers
-- Fallback: Demo Bypass mode for judges without webcam access
+```text
+                 ┌──────────────────────────┐
+                 │      Streamlit UI        │
+                 │   Monitoring Dashboard   │
+                 └────────────┬─────────────┘
+                              │
+                 ┌────────────▼─────────────┐
+                 │   Gesture Authentication│
+                 │     MediaPipe / OpenCV   │
+                 └────────────┬─────────────┘
+                              │
+                 ┌────────────▼─────────────┐
+                 │      Neural Brain        │
+                 │   Model Weight Monitor   │
+                 └────────────┬─────────────┘
+                              │
+                 ┌────────────▼─────────────┐
+                 │    LIF Drift Detection   │
+                 │  Membrane / Leak / Spike │
+                 └────────────┬─────────────┘
+                              │
+                 ┌────────────▼─────────────┐
+                 │    Attack Simulation     │
+                 │   Poison Fingerprints    │
+                 │      Attack Replay      │
+                 └────────────┬─────────────┘
+                              │
+                 ┌────────────▼─────────────┐
+                 │   Metrics & Alerting     │
+                 │   Drift Visualization    │
+                 └────────────┬─────────────┘
+                              │
+                 ┌────────────▼─────────────┐
+                 │   SHA-256 Audit Chain    │
+                 │   Integrity Verification│
+                 └────────────┬─────────────┘
+                              │
+                 ┌────────────▼─────────────┐
+                 │   Trusted Checkpoints   │
+                 │     Brain Rollback      │
+                 └──────────────────────────┘
 ```
-![NeuralWatch Login](login.png)
-```
+
 ---
 
-## *Layer 2 — ⭐ Core Innovation: Neuromorphic Drift Detection*
+## ⚡ Core Features
 
-We simulate a **Leaky Integrate-and-Fire (LIF) neuron** — the foundational model of neuromorphic computing — to monitor the AI's synaptic weights in real time.
+### 1. Neuromorphic Drift Detection
 
-```
-Normal learning    →  tiny, random weight changes  →  membrane leaks away  →  no spike ✓
+**Core innovation of NeuralWatch**
 
-*This is the key idea behind NeuralWatch and the part we explored for the Neuromorphic Computing track*
+NeuralWatch implements a Leaky Integrate-and-Fire (LIF)-inspired mechanism to monitor suspicious changes in model weights.
 
-Attack in progress →  consistent directional drift  →  membrane builds up
-                   →  crosses threshold             →  SPIKE FIRED  →  🚨 ALERT
-```
+The mechanism explores two different behaviours:
 
-**The key neuromorphic insight:** We don't just check *if* weights changed. We check *how they change over time.* A single small change means nothing. The same small change, repeated in the same direction over 1000 steps — that's a pattern. The LIF model catches it because it *remembers* through accumulation, exactly like a biological neuron does.
+- Normal parameter variation: Small changes that decay through the leakage mechanism.
+- Persistent directional drift: Repeated changes that accumulate membrane potential and may trigger an alert.
+
+#### LIF Membrane Dynamics
+
+\[
+V_t = \lambda V_{t-1} + I_t
+\]
+
+Where:
+
+- \(V_t\): Current membrane potential.
+- \(\lambda\): Membrane retention factor.
+- \(I_t\): Incoming drift signal.
+
+When membrane potential exceeds a configurable threshold, the system generates an alert.
 
 ```python
-# The core LIF logic — deceptively simple, neuromorphically powerful
-membrane_potential += weight_drift_magnitude
-membrane_potential *= (1 - leak_rate)      # healthy learning leaks away naturally
+membrane_potential += drift_signal
+membrane_potential *= (1 - leak_rate)
 
 if membrane_potential > threshold:
-    fire_alert()                           # spike! attacker caught
-    membrane_potential = 0                 # reset after spike
+    fire_alert()
+    membrane_potential = 0
 ```
 
-**Why this defeats slow attackers:** A healthy AI learning normally produces random, non-directional weight changes — the membrane leaks faster than it fills. An attacker pushing the AI in one direction produces consistent, directional drift — the membrane accumulates until the spike fires. **In our experiments, persistent directional drift causes the LIF neuron to accumulate and eventually raise an alert** There is no slow enough.
+The central idea is that individual weight changes may be insignificant, but persistent directional changes over time can indicate suspicious behaviour.
 
-This is the same model used in neuromorphic hardware research at **Intel (Loihi 2)** and **IBM (TrueNorth)**.
+### 2. Poison Fingerprint Tracking
 
-![NeuralWatch Dashboard](dashboard.png)
----
+Introduced during the October 2026 development updates, poison fingerprint tracking extends the monitoring workflow beyond basic drift detection.
 
-## Layer 3 — Cryptographic Tamper-Evident Audit Log
+This functionality supports tracking suspicious model changes associated with simulated poisoning scenarios.
 
-Every monitoring event is written to an append-only log with **SHA-256 chained signatures**, similar to a blockchain.
+It provides an additional mechanism for inspecting and identifying changes during attack simulations.
 
+### 3. Attack Replay
+
+NeuralWatch includes an **Attack Replay** capability, added and successfully tested on October 30, 2026.
+
+Attack Replay supports repeatable demonstrations of attack scenarios, allowing users to observe the monitoring workflow under controlled conditions.
+
+It helps demonstrate:
+
+- Simulated attack behaviour.
+- Changes in model-weight drift.
+- Neuromorphic membrane accumulation.
+- Alert generation.
+- Monitoring and investigation workflows.
+
+### 4. Monitoring Metrics & Visualization
+
+NeuralWatch integrates monitoring metrics into its interactive dashboard.
+
+The interface provides visual feedback about monitoring activity and detection behaviour, making it easier to inspect the system during normal operation and simulated attacks.
+
+### 5. Gesture-Based Authentication
+
+**Technologies: MediaPipe + OpenCV**
+
+The dashboard includes webcam-based gesture authentication.
+
+Features include:
+
+- Hand landmark detection using MediaPipe.
+- Recognition of a predefined hand gesture.
+- Gesture hold-duration verification.
+- Local webcam processing.
+- Safe camera fallback behaviour.
+- Demo Bypass for environments without webcam access.
+
+### 6. Tamper-Evident Audit Logging
+
+NeuralWatch uses SHA-256 hash chaining to maintain an integrity-verifiable sequence of monitoring events.
+
+Each audit entry incorporates the hash of the previous entry.
+
+Conceptual implementation:
+
+```python
+entry_hash = sha256(
+    current_event + previous_hash
+).hexdigest()
 ```
-Entry 001: {event: "monitoring_start", weights_hash: "a3f9...", prev_hash: "0000..."}
-Entry 002: {event: "drift_detected",   weights_hash: "b12c...", prev_hash: "a3f9..."}
-Entry 003: {event: "spike_fired",      weights_hash: "cc4d...", prev_hash: "b12c..."}
-```
 
-If an attacker gains access and deletes entry 002, entry 003's `prev_hash` no longer matches — **the chain breaks instantly and a secondary alert fires.**
+If an existing entry is modified, subsequent hash verification can reveal inconsistencies in the chain.
 
-![Live Audit Log](auditlog.png)
----
+The audit mechanism provides tamper evidence rather than guaranteeing protection against an attacker capable of rewriting the entire log.
 
-## What Makes NeuralWatch Different
+### 7. Trusted Checkpoint & Brain Rollback
 
-| Existing Security AI | NeuralWatch |
-|---|---|
-| Monitors network traffic (the road) | Monitors the AI's neural weights (the driver) |
-| Detects known attack signatures | Detects cumulative behavioral drift over time |
-| Defeated by slow, patient attackers | LIF accumulation catches low-and-slow poisoning |
-| AI can be corrupted silently | Any weight drift triggers cryptographic log entry |
-| Audit logs are editable | SHA-256 chained log — edits break the chain instantly |
-| No rollback capability | One-click brain rollback to verified clean baseline |
+NeuralWatch incorporates checkpoint-based recovery to restore a previously trusted model state.
+
+The rollback workflow is designed to recover from simulated poisoning or manipulation scenarios.
+
+The October 30 development updates also included improvements to fingerprint handling and rollback behaviour.
 
 ---
 
-## How Neuromorphic Computing Powers This
+## 🔬 How Neuromorphic Computing Powers NeuralWatch
 
-Traditional computers process data continuously in binary. Neuromorphic computers mimic biological neurons — they rest silently, then fire a **spike** only when a meaningful threshold is crossed. Crucially, **the timing and accumulation of inputs carries the information**, not just the inputs themselves.
-
-NeuralWatch maps this directly onto AI security:
+NeuralWatch maps biological neuron behaviour to AI integrity monitoring.
 
 | Biological Neuron | NeuralWatch |
 |---|---|
-| Receives signals from synapses | Receives weight delta readings |
-| Membrane potential accumulates | `membrane += drift_magnitude` |
-| Leaks during idle periods | `membrane *= (1 - leak_rate)` |
-| Fires a spike at threshold | Alert triggered, incident logged |
-| Resets after firing | Membrane resets, monitoring resumes |
+| Synaptic input | Model weight drift signal |
+| Membrane potential | Accumulated drift |
+| Membrane leakage | Drift signal decay |
+| Firing threshold | Detection threshold |
+| Action potential | Security alert |
+| Reset mechanism | Membrane reset |
 
-A healthy AI learning normally produces random, non-directional weight changes — the membrane leaks faster than it fills. An attacker pushing the AI in a specific direction produces consistent, directional drift — the membrane accumulates until the spike fires. **The attacker cannot avoid this without also avoiding making the AI learn what they want it to learn.**
+The research question behind this implementation:
 
----
+**Can temporal accumulation of suspicious model-weight changes help identify manipulation patterns that may not be apparent when individual changes are evaluated independently?**
 
-## Demo Walkthrough
-
-```
-1. Launch          →  streamlit run dashboard.py → open localhost:8501
-2. Authenticate    →  Show 2 fingers to webcam (or click Demo Bypass)
-3. Start Monitor   →  Click ▶ Start in sidebar — see weights update in real time
-4. Normal state    →  Drift graph stays green, membrane stays below threshold
-5. Activate attack →  Toggle "Simulate Attacker" — watch drift become directional
-6. Spike fires     →  Membrane crosses threshold → red alert → log entry created
-7. Rollback        →  Click "Rollback Brain" → weights restored to clean baseline
-8. Tamper test     →  Click "Simulate Tamper Attack" → "Verify Log Chain" → chain break detected
-```
-![Spike Detection Alert](spike.png)
----
-⚠️ *Note: Gesture authentication requires a local webcam.*
-*On the deployed version, use "Demo Bypass" to access the dashboard.*
-*Full gesture auth demo is shown in the video submission.*
+NeuralWatch explores this concept using LIF-inspired dynamics.
 
 ---
 
-## Tech Stack
+## 🧪 Demonstration Workflow
 
-| Component | Technology | Why |
+1. Launch the NeuralWatch dashboard.
+2. Authenticate through gesture recognition or Demo Bypass.
+3. Start the monitoring process.
+4. Observe normal simulated weight variations.
+5. Activate a simulated attack.
+6. Observe directional drift and membrane accumulation.
+7. Inspect generated alerts and monitoring metrics.
+8. Use Attack Replay to demonstrate attack scenarios.
+9. Inspect poison fingerprint tracking.
+10. Test trusted checkpoint restoration.
+11. Simulate audit-log tampering.
+12. Verify the audit chain.
+
+---
+
+## 🛠️ Technology Stack
+
+| Component | Technology | Purpose |
 |---|---|---|
-| Dashboard | **Streamlit** | Real-time reactive UI, minimal boilerplate |
-| LIF Model | **NumPy** | Fast array ops for weight simulation |
-| Gesture Auth | **MediaPipe + OpenCV** | On-device 21-point hand landmark detection |
-| Audit Chain | **hashlib SHA-256** | Standard, auditable, no external dependency |
-| Language | **Python 3.10+** | Rapid prototyping, rich ML ecosystem |
+| Programming Language | Python 3.10+ | Core implementation |
+| Dashboard | Streamlit | Interactive monitoring interface |
+| Numerical Computing | NumPy | Numerical operations and weight simulation |
+| Neuromorphic Model | LIF-inspired dynamics | Temporal drift monitoring |
+| Gesture Recognition | MediaPipe | Hand landmark detection |
+| Computer Vision | OpenCV | Webcam processing |
+| Cryptographic Logging | hashlib / SHA-256 | Audit hash generation and verification |
+| Version Control | Git & GitHub | Source control |
+| Deployment | Streamlit Community Cloud | Hosted demonstration |
 
 ---
 
-## Installation
+## 📂 Project Structure
+
+```text
+NeuralWatch/
+│
+├── dashboard.py
+├── neural_brain.py
+├── neuralwatch.py
+├── gesture_lock.py
+│
+├── requirements.txt
+├── README.md
+│
+└── assets/
+    ├── login.png
+    ├── dashboard.png
+    ├── spike.png
+    └── auditlog.png
+```
+
+*The directory tree is representative. Refer to the repository for the latest file structure.*
+
+---
+
+## 💻 Installation & Setup
+
+### Prerequisites
+
+- Python 3.10+
+- Git
+- Webcam (optional, for gesture authentication)
+
+### 1. Clone the repository
 
 ```bash
-git clone https://github.com/caliancodess20/NeuralWatch
-cd neuralwatch
+git clone https://github.com/caliancodess20/NeuralWatch.git
+
+cd NeuralWatch
+```
+
+### 2. Install dependencies
+
+```bash
 pip install -r requirements.txt
+```
+
+### 3. Run the application
+
+```bash
 streamlit run dashboard.py
 ```
 
-Open `http://localhost:8501` — allow webcam access and show 2 fingers, or click **Demo Bypass**.
+### 4. Open the dashboard
+
+```text
+http://localhost:8501
+```
+
+If webcam access is unavailable, use Demo Bypass if enabled.
+
+### Live Demo
+
+[Launch NeuralWatch on Streamlit](https://neuralwatch-vv3lpllqcyifqmgcmpqw6a.streamlit.app/)
+
+### GitHub Repository
+
+[View NeuralWatch Source Code](https://github.com/caliancodess20/NeuralWatch)
 
 ---
 
-## References
+## 🔐 Security Considerations & Limitations
 
-- Intel Loihi 2 neuromorphic chip — [intel.com/loihi](https://www.intel.com/content/www/us/en/research/neuromorphic-computing.html)
-- MITRE ATT&CK: ML Model Poisoning — T1565
-- MediaPipe Hand Landmark Detection — [developers.google.com/mediapipe](https://developers.google.com/mediapipe/solutions/vision/hand_landmarker)
+NeuralWatch is an experimental cybersecurity prototype.
+
+- Drift detection requires calibration against realistic model training behaviour.
+- Normal training can also produce directional weight changes.
+- Simulated attacks do not establish effectiveness against real-world poisoning attacks.
+- Poison fingerprint tracking requires further validation against different attack types.
+- Gesture authentication is a prototype access-control mechanism, not a replacement for enterprise identity management.
+- SHA-256 chaining provides tamper evidence but does not independently prevent complete log replacement.
+- Checkpoint security depends on protecting the trusted baseline.
+- Production deployment would require stronger access controls, monitoring, and security validation.
 
 ---
 
-## Team 
+## 🔭 Future Scope
 
-**VECTRACE** — Built at NEURONEX'26 | Domain: Cybersecurity | Track: Neuromorphic Computing
----
-*TEAM MEMBERS* -
-*ANWESHA DHOTE 25BAI10996* *|Project ideation,Team Leader, neuromorphic research, AI integrity monitoring, Neuromorphic Drift Detection* |
--
+- Integration with real machine learning training pipelines.
+- Evaluation against established poisoning and backdoor attack datasets.
+- Detection accuracy and false-positive benchmarking.
+- Adaptive LIF threshold calibration.
+- Advanced poison fingerprint analysis.
+- Expanded attack replay scenarios.
+- Protected checkpoint storage.
+- External tamper-resistant audit infrastructure.
+- Exploration of neuromorphic hardware deployment.
 
-*SANSKRUTI CHANEKAR 25BAI10603|Project ideation, security architecture, dashboard development, Audit Logging, Threat Simulation |
--
+---
 
-*SAUMYA SINHA 25BAI11388*|Project ideation, system integration, gesture authentication, implementation, testing  |
--
-*BRANCH- CSE (AI&ML)*
+## 📚 References
+
+- [Intel Neuromorphic Computing Research](https://www.intel.com/content/www/us/en/research/neuromorphic-computing.html)
+- [MITRE ATLAS – Adversarial Threat Landscape for AI Systems](https://atlas.mitre.org/)
+- [NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework)
+- [MediaPipe Hand Landmarker](https://developers.google.com/mediapipe/solutions/vision/hand_landmarker)
+- [Integrate-and-Fire Models – Scholarpedia](http://www.scholarpedia.org/article/Integrate-and-fire_models)
+
 ---
-*ACADEMIC YEAR- 1st YEAR*
+
+## 👩‍💻 Team VECTRACE
+
+**NEURONEX'26 | Cybersecurity | Neuromorphic Computing**
+
+**Institution:** VIT Bhopal University  
+**Branch:** CSE (Artificial Intelligence & Machine Learning)  
+**Academic Year:** First Year
+
+| Team Member | Contributions |
+|---|---|
+| **Sanskruti Chanekar** | Project ideation, security architecture, dashboard development, Attack Replay implementation and testing, Poison Fingerprint Tracking, monitoring metrics integration, audit logging, threat simulation, and checkpoint rollback improvements |
+| **Anwesha Dhote** | Project ideation, neuromorphic research, AI integrity monitoring, LIF-based Neuromorphic Drift Detection |
+| **Saumya Sinha** | Project ideation, system integration, gesture authentication, implementation, and testing |
+
 ---
-*UNIVERSITY - VIT BHOPAL UNIVERSITY*
----
+
+## 💡 Project Vision
+
+NeuralWatch explores a different perspective on cybersecurity: protecting not only the infrastructure running an AI system, but also the integrity of the model itself.
+
+By combining neuromorphic-inspired monitoring, attack simulation, poison fingerprint tracking, cryptographic audit logging, and checkpoint-based recovery, NeuralWatch demonstrates an experimental approach to AI integrity monitoring.
+
+**Monitor the model. Detect suspicious drift. Preserve AI integrity.**
