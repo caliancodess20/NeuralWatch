@@ -153,7 +153,9 @@ if "attack_mode" not in st.session_state:
 
 if "session_started" not in st.session_state:
     st.session_state.session_started = time.strftime("%H:%M:%S")
-
+    
+if "fingerprint" not in st.session_state:
+    st.session_state.fingerprint = None
 
 # ---------------------------------------------------------------------------
 # Layer 1 - Gesture lock gate
@@ -247,8 +249,10 @@ with st.sidebar:
         else:
             st.button("⏸ Pause", use_container_width=True, disabled=True)
 
-    if st.button("🔄 Rollback Brain", use_container_width=True):
+       if st.button("🔄 Rollback Brain", use_container_width=True):
         watch.perform_rollback()
+        st.session_state.fingerprint = None
+        st.session_state.history = []
         st.success("Brain rolled back to clean state!")
 
     st.markdown("---")
@@ -346,6 +350,24 @@ else:
 
 st.markdown("<div style='height:8px'></div>", unsafe_allow_html=True)
 
+# --- Poison fingerprint -------------------------------------------------------
+fp = st.session_state.fingerprint
+if fp is not None:
+    st.markdown("### 🧬 Poison Fingerprint")
+    f1, f2, f3 = st.columns(3)
+    f1.metric("Weights pushed UP", fp["up"])
+    f2.metric("Weights pushed DOWN", fp["down"])
+    f3.metric("Hotspot", fp["hotspot"])
+
+    if fp["up"] > 3 * max(fp["down"], 1):
+        st.error("Pattern: almost all changes go UP, which looks like poisoning.")
+    else:
+        st.info("Pattern: changes go both ways, which looks like normal learning.")
+
+    st.caption("Top 5 most-changed weights:")
+    st.dataframe(pd.DataFrame(fp["top"]), hide_index=True)
+    st.markdown("<hr style='border-color:#1E293B;'>", unsafe_allow_html=True)
+    
 # --- Charts -------------------------------------------------------------------
 chart_l, chart_r = st.columns(2)
 
@@ -427,6 +449,9 @@ if st.session_state.monitoring:
         brain.learn_normally()
 
     result = watch.monitor_tick(tick, st.session_state.attack_mode)
+    
+    if result["spike_fired"]:
+        st.session_state.fingerprint = brain.get_poison_fingerprint()
 
     st.session_state.history.append({
         "tick": tick,

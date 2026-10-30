@@ -71,3 +71,28 @@ class NeuromorphicBrain:
         """Restore the brain to its last clean baseline state."""
         self.weights = self.baseline.copy()
         self.membrane_potential = 0.0
+        
+    def get_poison_fingerprint(self, top_n=5, min_change=0.02):
+        """Finds WHICH weights moved, and in which direction."""
+        delta = self.weights - self.baseline   # change of every weight
+
+        up = int(np.sum(delta > min_change))     # weights that went up
+        down = int(np.sum(delta < -min_change))  # weights that went down
+
+        # The top_n weights with the biggest change
+        order = np.argsort(np.abs(delta), axis=None)[::-1][:top_n]
+        top = []
+        for idx in order:
+            r, c = divmod(int(idx), 10)
+            top.append({"Row": r, "Col": c, "Change": round(float(delta[r, c]), 4)})
+
+        # Which corner of the 10x10 grid changed most?
+        quadrants = {
+            "top-left": np.mean(np.abs(delta[:5, :5])),
+            "top-right": np.mean(np.abs(delta[:5, 5:])),
+            "bottom-left": np.mean(np.abs(delta[5:, :5])),
+            "bottom-right": np.mean(np.abs(delta[5:, 5:])),
+        }
+        hotspot = max(quadrants, key=quadrants.get)
+
+        return {"up": up, "down": down, "top": top, "hotspot": hotspot}
