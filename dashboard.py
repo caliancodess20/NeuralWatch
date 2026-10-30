@@ -10,10 +10,6 @@ Layers:
   1 - Biometric gesture lock      (gesture_lock.py)
   2 - Neuromorphic drift detector (neural_brain.py)
   3 - Cryptographic audit chain   (neuralwatch.py)
-
-Theme: dark, cyan-accent UI matching the NeuralWatch demo video
-(Vector Vision). Colors and layout are also set in
-.streamlit/config.toml.
 """
 
 import time
@@ -32,37 +28,25 @@ st.set_page_config(
 )
 
 # ---------------------------------------------------------------------------
-# Global CSS — dark theme polish matching the demo video
+# Global CSS
 # ---------------------------------------------------------------------------
 st.markdown(
     """
     <style>
     .stApp { background-color: #0B0F19; }
-
-    /* Metric cards */
     div[data-testid="stMetric"] {
         background-color: #11182A;
         border: 1px solid #1E293B;
         border-radius: 10px;
         padding: 14px 18px;
     }
-    div[data-testid="stMetric"] label {
-        color: #38BDF8 !important;
-    }
-    div[data-testid="stMetricValue"] {
-        color: #67E8F9 !important;
-    }
-
-    /* Sidebar */
+    div[data-testid="stMetric"] label { color: #38BDF8 !important; }
+    div[data-testid="stMetricValue"] { color: #67E8F9 !important; }
     section[data-testid="stSidebar"] {
         background-color: #0B0F19;
         border-right: 1px solid #1E293B;
     }
-
-    /* Headings */
     h1, h2, h3 { color: #E2E8F0; }
-
-    /* Status banners */
     .nw-banner-safe {
         background-color: rgba(34,197,94,0.08);
         border: 1px solid #16A34A;
@@ -104,14 +88,10 @@ st.markdown(
         letter-spacing: 0.05em;
         margin-bottom: 16px;
     }
-
-    /* Audit log entries */
     .nw-log-safe   { color: #4ADE80; font-family: 'Courier New', monospace; font-size: 0.85rem; }
     .nw-log-spike  { color: #F87171; font-family: 'Courier New', monospace; font-size: 0.85rem; }
     .nw-log-warn   { color: #FACC15; font-family: 'Courier New', monospace; font-size: 0.85rem; }
     .nw-log-roll   { color: #67E8F9; font-family: 'Courier New', monospace; font-size: 0.85rem; }
-
-    /* Authenticated badge */
     .nw-auth-badge {
         background-color: rgba(34,197,94,0.12);
         border: 1px solid #16A34A;
@@ -128,7 +108,7 @@ st.markdown(
 )
 
 # ---------------------------------------------------------------------------
-# Session state initialisation
+# Session state
 # ---------------------------------------------------------------------------
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
@@ -143,7 +123,7 @@ if "tick" not in st.session_state:
     st.session_state.tick = 0
 
 if "history" not in st.session_state:
-    st.session_state.history = []  # list of dicts: tick, drift, membrane, status
+    st.session_state.history = []
 
 if "monitoring" not in st.session_state:
     st.session_state.monitoring = False
@@ -153,7 +133,7 @@ if "attack_mode" not in st.session_state:
 
 if "session_started" not in st.session_state:
     st.session_state.session_started = time.strftime("%H:%M:%S")
-    
+
 if "fingerprint" not in st.session_state:
     st.session_state.fingerprint = None
 
@@ -200,12 +180,12 @@ if not st.session_state.authenticated:
 
 
 # ---------------------------------------------------------------------------
-# Main dashboard (post-authentication)
+# Main dashboard
 # ---------------------------------------------------------------------------
 brain = st.session_state.brain
 watch = st.session_state.watch
 
-# --- Sidebar: Control Panel --------------------------------------------------
+# --- Sidebar ------------------------------------------------------------------
 with st.sidebar:
     st.markdown("## Control Panel")
     st.markdown("---")
@@ -249,7 +229,7 @@ with st.sidebar:
         else:
             st.button("⏸ Pause", use_container_width=True, disabled=True)
 
-       if st.button("🔄 Rollback Brain", use_container_width=True):
+    if st.button("🔄 Rollback Brain", use_container_width=True):
         watch.perform_rollback()
         st.session_state.fingerprint = None
         st.session_state.history = []
@@ -367,7 +347,7 @@ if fp is not None:
     st.caption("Top 5 most-changed weights:")
     st.dataframe(pd.DataFrame(fp["top"]), hide_index=True)
     st.markdown("<hr style='border-color:#1E293B;'>", unsafe_allow_html=True)
-    
+
 # --- Charts -------------------------------------------------------------------
 chart_l, chart_r = st.columns(2)
 
@@ -437,7 +417,7 @@ else:
 
 
 # ---------------------------------------------------------------------------
-# Monitoring loop (one tick per rerun while monitoring is True)
+# Monitoring loop
 # ---------------------------------------------------------------------------
 if st.session_state.monitoring:
     st.session_state.tick += 1
@@ -449,7 +429,7 @@ if st.session_state.monitoring:
         brain.learn_normally()
 
     result = watch.monitor_tick(tick, st.session_state.attack_mode)
-    
+
     if result["spike_fired"]:
         st.session_state.fingerprint = brain.get_poison_fingerprint()
 
