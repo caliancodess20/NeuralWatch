@@ -211,20 +211,131 @@ NeuralWatch explores this concept using LIF-inspired dynamics.
 
 ---
 
-## 🧪 Demonstration Workflow
 
-1. Launch the NeuralWatch dashboard.
-2. Authenticate through gesture recognition or Demo Bypass.
-3. Start the monitoring process.
-4. Observe normal simulated weight variations.
-5. Activate a simulated attack.
-6. Observe directional drift and membrane accumulation.
-7. Inspect generated alerts and monitoring metrics.
-8. Use Attack Replay to demonstrate attack scenarios.
-9. Inspect poison fingerprint tracking.
-10. Test trusted checkpoint restoration.
-11. Simulate audit-log tampering.
-12. Verify the audit chain.
+## 📸 Application Walkthrough — End-to-End Workflow
+
+NeuralWatch demonstrates how a neuromorphic AI integrity monitoring system can monitor neural activity, simulate attacks, track suspicious weight modifications, recover from a clean checkpoint, and verify audit-log integrity.
+
+The following walkthrough presents the complete application workflow in chronological order.
+
+### Step 1: Gesture-Based Authentication
+
+**What happens:**  
+The user opens NeuralWatch and reaches the login interface. The application uses a gesture-based authentication mechanism with MediaPipe and OpenCV. A two-finger gesture can be used to authenticate, while Demo Bypass is available for demonstration purposes.
+
+**What this demonstrates:**  
+The application's gesture-based access interface.
+
+![Step 1 - Gesture-Based Authentication](screenshots/01-login-gesture-authentication.png)
+
+---
+
+### Step 2: Initialize the Monitoring Dashboard
+
+**What happens:**  
+After entering the application, the user accesses the main monitoring dashboard. NeuralWatch displays important monitoring metrics, including:
+
+- Neural drift score
+- Membrane potential
+- Spike count
+- Rollback count
+- Monitoring graphs and visualizations
+
+**What this demonstrates:**  
+The baseline monitoring interface used to observe the system's neural activity.
+
+![Step 2 - Main Monitoring Dashboard](screenshots/02-main-dashboard.png)
+
+---
+
+### Step 3: Monitor the Cryptographic Audit Log
+
+**What happens:**  
+NeuralWatch maintains a timestamped audit trail of system events. Each entry is linked through SHA-256 hash chaining.
+
+**What this demonstrates:**  
+How system events are recorded to support audit-log integrity verification.
+
+![Step 3 - Cryptographic Audit Log](screenshots/03-cryptographic-audit-log.png)
+
+---
+
+### Step 4: Simulate an Attack on Neural Weights
+
+**What happens:**  
+The user activates the simulated attacker. The application modifies neural weights in a controlled demonstration environment.
+
+NeuralWatch displays monitoring information such as drift score, spike activity, weight-change direction, and poison fingerprint tracking.
+
+**What this demonstrates:**  
+How the application visualizes suspicious weight modifications during a simulated attack.
+
+![Step 4 - Simulated Attack Detection](screenshots/04-attack-detection-poison-fingerprint.png)
+
+---
+
+### Step 5: Replay and Investigate the Attack
+
+**What happens:**  
+The user opens Attack Replay and moves through the attack timeline to inspect changes over time.
+
+A heatmap visualizes weight modifications:
+
+- Red: increased weights
+- Blue: decreased weights
+- White: unchanged weights
+
+**What this demonstrates:**  
+How users can investigate the progression and distribution of simulated weight modifications.
+
+![Step 5 - Attack Replay](screenshots/05-attack-replay.png)
+
+---
+
+### Step 6: Restore the Clean Checkpoint
+
+**What happens:**  
+After the simulated attack, the user triggers checkpoint rollback. NeuralWatch restores the neural brain to a previously saved clean checkpoint.
+
+The dashboard displays the rollback confirmation and updated monitoring metrics.
+
+**What this demonstrates:**  
+The checkpoint-based recovery mechanism for reversing simulated malicious weight modifications.
+
+![Step 6 - Checkpoint Rollback](screenshots/06-checkpoint-rollback.png)
+
+---
+
+### Step 7: Simulate Audit-Log Tampering
+
+**What happens:**  
+The user activates the audit-log tampering demonstration. An existing audit entry is modified to simulate unauthorized changes.
+
+**What this demonstrates:**  
+How modifying a hash-chained audit entry can compromise the integrity of the log.
+
+![Step 7 - Audit Log Tampering](screenshots/07-tamper-detection.png)
+
+---
+
+### Step 8: Detect the Modified Audit Entry
+
+**What happens:**  
+The integrity-verification mechanism checks the audit-log chain. The simulated modification causes a hash-chain mismatch, and the application displays a tampering warning.
+
+**What this demonstrates:**  
+How hash-chain verification can reveal modifications to previously recorded audit entries.
+
+![Step 8 - Tampered Audit Entry](screenshots/08-tampered-audit-entry.png)
+
+---
+
+### Complete Workflow
+
+**Authenticate → Monitor → Record Events → Simulate Attack → Detect → Replay → Rollback → Verify Audit Integrity**
+
+NeuralWatch brings together experimental neuromorphic monitoring, attack simulation, checkpoint recovery, and cryptographic audit logging in one interactive prototype.
+
 
 ---
 
