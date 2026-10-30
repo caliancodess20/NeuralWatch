@@ -248,8 +248,8 @@ with st.sidebar:
                 st.rerun()
         else:
             st.button("⏸ Pause", use_container_width=True, disabled=True)
-
-       if st.button("🔄 Rollback Brain", use_container_width=True):
+            
+    if st.button("🔄 Rollback Brain", use_container_width=True):
         watch.perform_rollback()
         st.session_state.fingerprint = None
         st.session_state.history = []
