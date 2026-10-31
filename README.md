@@ -475,7 +475,7 @@ NeuralWatch is an experimental cybersecurity prototype.
 | Team Member | Contributions |
 |---|---|
 | **Sanskruti Chanekar** | Project ideation, security architecture, dashboard development, Attack Replay implementation and testing, Poison Fingerprint Tracking, monitoring metrics integration, audit logging, threat simulation, and checkpoint rollback improvements |
-| **Anwesha Dhote** | Project ideation, neuromorphic research, AI integrity monitoring, LIF-based Neuromorphic Drift Detection |
+| **Anwesha Dhote** | Project ideation, neuromorphic research, AI integrity monitoring, LIF-based Neuromorphic Drift Detection, security architecture, core backend & system architecture, main dashboard structure & UI design, threat simulation logic, audit logging system, checkpoint rollback, API/metrics integration, mathematical modeling for weight drift, and core algorithmic integration. |
 | **Saumya Sinha** | Project ideation, system integration, gesture authentication, implementation, and testing |
 
 ---
